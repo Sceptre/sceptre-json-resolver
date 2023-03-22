@@ -1,0 +1,190 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: sceptreorg/sceptre-circleci:2.0.0
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key:
+            v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+
+      - run:
+          name: Install
+          command: |
+            pyenv virtualenv 3.9.4 venv
+            pyenv global venv
+            make install-dev
+
+      - save_cache:
+          key:
+            v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          paths:
+            - 'venv'
+
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project
+
+  lint-and-unit-test:
+    docker:
+      - image: sceptreorg/sceptre-circleci:2.0.0
+
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+
+      - checkout
+
+      - restore_cache:
+          key:
+            v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+
+      - run:
+          name: Install Dependencies
+          command: |
+            pyenv virtualenv 3.9.4 venv
+            pyenv global venv
+            make install-dev
+
+      - save_cache:
+          key:
+            v1-dependency-cache-{{ checksum "setup.py" }}-{{ checksum "Makefile" }}
+          paths:
+            - 'venv'
+
+      - run:
+          name: Linting
+          command: |
+            pyenv global venv
+            make lint
+
+      - run:
+          name: Unit Test
+          command: |
+            pyenv global venv
+            make test-all
+
+      - run:
+          name: Coverage
+          command: |
+            pyenv global venv
+            make coverage
+
+      - store_test_results:
+          path: test-reports
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+      - store_artifacts:
+          path: coverage.xml
+          destination: coverage-reports
+
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project
+
+  deploy-test:
+    docker:
+      - image: sceptreorg/sceptre-circleci:2.0.0
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            pyenv virtualenv 3.9.4 venv
+            pyenv global venv
+            make install-dev
+
+          paths:
+            - 'venv'
+
+      - run:
+          name: Initialise .pypirc
+          command: |
+            echo -e "[distutils]\n  index-servers =\n    test-pypi\n\n" >> ~/.pypirc
+            echo -e "[test-pypi]" >> ~/.pypirc
+            echo -e "username: $PYPI_TEST_USER" >> ~/.pypirc
+            echo -e "password: $PYPI_TEST_PASSWORD" >> ~/.pypirc
+            echo -e "repository: https://test.pypi.org/legacy/" >> ~/.pypirc
+
+      - run:
+          name: Create Distribution
+          command: |
+            pyenv global venv
+            make dist
+
+      - run:
+          name: Upload to PyPi
+          command: |
+            pyenv global venv
+            twine upload -r test-pypi dist/*
+
+  deploy-production:
+    docker:
+      - image: sceptreorg/sceptre-circleci:2.0.0
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            pyenv virtualenv 3.9.4 venv
+            pyenv global venv
+            make install-dev
+
+          paths:
+            - 'venv'
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[distutils]\n  index-servers =\n    pypi\n\n" >> ~/.pypirc
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username: $PYPI_PROD_USER" >> ~/.pypirc
+            echo -e "password: $PYPI_PROD_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: Create Distribution
+          command: |
+            pyenv global venv
+            make dist
+
+      - run:
+          name: Upload to PyPi
+          command: |
+            pyenv global venv
+            twine upload -r pypi dist/*
+workflows:
+  test:
+    jobs:
+      - build
+      - lint-and-unit-test:
+          requires:
+            - build
+  tag:
+    jobs:
+      - deploy-test:
+          context: sceptre-templates-context
+          filters:
+            tags:
+              only: /^v([0-9]+)\.([0-9]+)\.([0-9]+)(?:([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+            branches:
+              ignore: /.*/
+      - deploy-production:
+          context: sceptre-templates-context
+          requires:
+            - deploy-test
+          filters:
+            tags:
+              only: /^v([0-9]+)\.([0-9]+)\.([0-9]+)(?:([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+            branches:
+              ignore: /.*/
