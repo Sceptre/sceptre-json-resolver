@@ -7,14 +7,8 @@ __version__ = "0.0.1"
 
 # lowercase, use `-` as separator.
 RESOLVER_NAME = "sceptre-resolver-template"
-# the resolver call in sceptre e.g. !command_name.
-RESOLVER_COMMAND_NAME = "custom_resolver"
-# do not change. Rename resolver/resolver.py to resolver/{RESOLVER_COMMAND_NAME}.py
-RESOLVER_MODULE_NAME = "resolver.{}".format(RESOLVER_COMMAND_NAME)
-# CamelCase name of resolver class in resolver.resolver.
-RESOLVER_CLASS = "CustomResolver"
 # One line summary description
-RESOLVER_DESCRIPTION = ""
+RESOLVER_DESCRIPTION = "Resolvers to convert values to and from JSON strings"
 # if multiple use a single string with comma separated names.
 RESOLVER_AUTHOR = "Sceptre"
 # if multiple use single string with commas.
@@ -45,12 +39,11 @@ setup(
     license="Apache2",
     url=RESOLVER_URL,
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    py_modules=[RESOLVER_MODULE_NAME],
+    py_modules=["resolver.to_json", "resolver.from_json"],
     entry_points={
         "sceptre.resolvers": [
-            "{}={}:{}".format(
-                RESOLVER_COMMAND_NAME, RESOLVER_MODULE_NAME, RESOLVER_CLASS
-            )
+            "from_json=resolver.from_json:FromJsonResolver",
+            "to_json=resolver.to_json:ToJsonResolver",
         ]
     },
     include_package_data=True,
