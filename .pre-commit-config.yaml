@@ -44,8 +44,8 @@ repos:
     rev: '1.4.0'
     hooks:
       - id: poetry-check
-# Comment out due to error: Current Python version (3.11.1) is not allowed by the project (>=3.8,<3.11)
-#      - id: poetry-lock
+      - id: poetry-lock
+        language_version: python3.10
   - repo: https://github.com/AleksaC/circleci-cli-py
     rev: v0.1.25085
     hooks:
