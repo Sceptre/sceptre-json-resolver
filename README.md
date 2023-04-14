@@ -32,26 +32,46 @@ parameters|sceptre_user_data:
   <name>: !to_json [ <json object> ]
 ```
 
-## Examples
+__NOTE__: This resolver expects a single-item list argument.
+
+## Basic Examples
 
 Take some json object serialize it to a string then pass it to a parameter:
 ```yaml
 parameters:
    myparam: !to_json [{"key": "value"}]
 ```
+__Note__: The string `'{"key": "value"}'` is passed to myparam
+
 
 Take a string deserialize it to a json object then pass it to a parameter:
 ```yaml
 sceptre_user_data:
   myparam: !from_json ['{"key": "value"}']
 ```
+__Note__: The object `{"key": "value"}` is passed to myparam
 
-Make a request to a REST API, deserialize the response to a json object
-then pass it to a parameter:
+
+## Nested resolver examples
+
+These use case requires the nested resolver feature in
+Sceptre version 4.1 and greater.
+
+
+Load a json object from a file using the
+[sceptre file resolver](https://pypi.org/project/sceptre-file-resolver/),
+serialize the object to a string then pass it to a parameter:
+```yaml
+parameters:
+  hounds: !to_json [ !file 'hounds.json' ]
+```
+
+
+Make a request to a REST API using the
+[sceptre-request-resolver](https://pypi.org/project/sceptre-request-resolver/),
+deserialize the response to a json object then pass it to a parameter:
 ```yaml
 sceptre_user_data:
   hounds: !from_json
     - !request 'https://dog.ceo/api/breed/hound/list'
 ```
-__NOTE__: This use case requires the nested resolver feature in
-Sceptre version 4.1 and greater.
