@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "sceptre-json-template"
+name = "sceptre-json-resolver"
 version = "0.0.1"
 packages = [{ include = "resolver" }]
 readme = "README.md"
@@ -21,7 +21,7 @@ classifiers = [
 
 [tool.poetry.plugins."sceptre.resolvers"]
 "from_json" = "resolver.from_json:FromJsonResolver"
-"to_json" = "resolver.from_json:ToJsonResolver"
+"to_json" = "resolver.to_json:ToJsonResolver"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
