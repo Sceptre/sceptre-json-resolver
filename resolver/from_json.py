@@ -22,7 +22,7 @@ class FromJsonResolver(Resolver):
                 return json.dumps(arg[0])
 
             raise SceptreException(
-                f"!from_json expects a string argument, got {type(arg)}"
+                f"!from_json expects a single-item list argument, got {type(arg)}"
             )
 
         except json.JSONDecodeError as e:
