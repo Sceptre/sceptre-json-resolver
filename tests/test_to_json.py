@@ -1,23 +1,41 @@
 import json
+import pytest
 
 from resolver.to_json import ToJsonResolver
+from sceptre.exceptions import SceptreException
 
 
 class TestToJson(object):
-    def setup_method(self, test_method):
-        pass
+    resolver = ToJsonResolver(argument=None)
 
-    def test__data_in__json_out(self):
-        test_values = [
+    @pytest.mark.parametrize(
+        "arg",
+        [
             1,
             3.4,
-            "plain string",
-            '{"string_that_is":"valid_json"}',
             True,
             False,
-            {"key1": 4, "key2": ["a", "b"], "key3": {"key4": "val"}},
-        ]
-        for value in test_values:
-            resolver = ToJsonResolver(value)
-            out = resolver.resolve()
-            assert json.loads(out) == value
+            "invalid",
+            [],
+            ["one", "two"],
+            {"key1": "value1"},
+        ],
+    )
+    def test__invalid_data_in(self, arg):
+        with pytest.raises(SceptreException):
+            self.resolver.argument = arg
+            self.resolver.resolve()
+
+    @pytest.mark.parametrize(
+        "arg",
+        [
+            ["one"],
+            [["one", "two"]],
+            [{"key1": "value1"}],
+            [{"key1": 4, "key2": ["a", "b"], "key3": {"key4": "val"}}],
+        ],
+    )
+    def test__data_in__json_out(self, arg):
+        self.resolver.argument = arg
+        out = self.resolver.resolve()
+        assert json.loads(out) == arg[0]

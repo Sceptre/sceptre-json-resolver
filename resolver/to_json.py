@@ -11,7 +11,17 @@ class ToJsonResolver(Resolver):
         intended by this resolver. It should return a string to become the
         final value.
         """
+        arg = self.argument
         try:
-            return json.dumps(self.argument)
-        except json.JSONEncodeError as e:
+            if isinstance(arg, list):
+                arg_count = len(arg)
+                if arg_count != 1:
+                    raise SceptreException(
+                        f"!to_json expects one argument, got {arg_count}"
+                    )
+                return json.dumps(arg[0])
+
+            raise SceptreException(f"!to_json expects a list, got {type(arg)}")
+
+        except json.JSONDecodeError as e:
             raise SceptreException("Error encoding JSON", e)

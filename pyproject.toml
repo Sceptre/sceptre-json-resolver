@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "sceptre-resolver-template"
+name = "sceptre-json-template"
 version = "0.0.1"
 packages = [{ include = "resolver" }]
 readme = "README.md"
-homepage = "https://github.com/Sceptre/sceptre-resolver-template"
-repository = "https://github.com/Sceptre/sceptre-resolver-template"
+homepage = "https://github.com/Sceptre/sceptre-json-resolver"
+repository = "https://github.com/Sceptre/sceptre-json-resolver"
 authors = ["Sceptre <sceptreorg@gmail.com>"]
-description = "A Github template for Sceptre resolvers"
+description = "A Sceptre resolver to serialize and deserialize json"
 keywords = ["sceptre", "sceptre-resolver"]
 license = "Apache-2.0"
 classifiers = [
@@ -20,7 +20,8 @@ classifiers = [
 ]
 
 [tool.poetry.plugins."sceptre.resolvers"]
-"custom" = "resolver.custom:Custom"
+"from_json" = "resolver.from_json:FromJsonResolver"
+"to_json" = "resolver.from_json:ToJsonResolver"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
@@ -30,7 +31,7 @@ pre-commit = "^3.2.1"
 tox = "^4.0.0"
 pytest = "^7.2.2"
 pytest-cov = "^4.0.0"
-sceptre = ">3.2"
+sceptre = ">=4.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
