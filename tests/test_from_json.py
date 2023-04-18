@@ -30,7 +30,7 @@ class TestFromJson(object):
     @pytest.mark.parametrize(
         "arg",
         [
-            ["one"],
+            ['["one"]'],
             ['["one", "two"]'],
             ['{"key1": "value1"}'],
             ['{"key1": 4, "key2": ["a", "b"], "key3": {"key4": "val"}}'],
@@ -39,4 +39,4 @@ class TestFromJson(object):
     def test__json_in__string_out(self, arg):
         self.resolver.argument = arg
         out = self.resolver.resolve()
-        assert out == json.dumps(arg[0])
+        assert out == json.loads(arg[0])

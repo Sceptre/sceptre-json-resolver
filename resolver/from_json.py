@@ -19,7 +19,7 @@ class FromJsonResolver(Resolver):
                     raise SceptreException(
                         f"!from_json expects exactly one argument, got {arg_count}"
                     )
-                return json.dumps(arg[0])
+                return json.loads(arg[0])
 
             raise SceptreException(
                 f"!from_json expects a single-item list argument, got {type(arg)}"
