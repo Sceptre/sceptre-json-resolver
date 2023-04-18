@@ -29,7 +29,7 @@ class TestToJson(object):
     @pytest.mark.parametrize(
         "arg",
         [
-            # ["one"],
+            [["one"]],
             [["one", "two"]],
             [{"key1": "value1"}],
             [{"key1": 4, "key2": ["a", "b"], "key3": {"key4": "val"}}],
