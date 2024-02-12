@@ -13,10 +13,6 @@ classifiers = [
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Environment :: Console",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11"
 ]
 
 [tool.poetry.plugins."sceptre.resolvers"]
@@ -24,14 +20,15 @@ classifiers = [
 "to_json" = "resolver.to_json:ToJsonResolver"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = "^3.8"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.2.1"
-tox = "^4.0.0"
+tox = "^3.23.0"
 pytest = "^7.2.2"
 pytest-cov = "^4.0.0"
-sceptre = ">=4.1.0"
+sceptre = "^4.0"
+tox-gh-matrix = "^0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
