@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sceptre-json-resolver"
-version = "0.1.0"
+version = "1.0.0"
 packages = [{ include = "resolver" }]
 readme = "README.md"
 homepage = "https://github.com/Sceptre/sceptre-json-resolver"
